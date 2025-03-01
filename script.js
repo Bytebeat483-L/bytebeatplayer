@@ -128,11 +128,15 @@ function visualize() {
     draw();
 }
 function updateURL() {
-    let params = new URLSearchParams();
-    params.set("formula", document.getElementById("formula").value);
-    params.set("sampleRate", document.getElementById("sampleRate").value);
-    params.set("volume", document.getElementById("volume").value);
-    params.set("mode", document.querySelector('input[name="mode"]:checked').value);
+    const formula = encodeURIComponent(document.getElementById("formula").value);
+    const sampleRate = document.getElementById("sampleRate").value;
+    const mode = document.querySelector('input[name="mode"]:checked').value;
+    const volume = document.getElementById("volume").value;
+
+    const newURL = `${window.location.origin}${window.location.pathname}?formula=${formula}&sampleRate=${sampleRate}&mode=${mode}&volume=${volume}`;
+    window.history.replaceState({}, "", newURL);
+}
+
     
     history.replaceState(null, "", "?" + params.toString());
 }
