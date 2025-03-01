@@ -232,6 +232,10 @@ function encodeWAV(samples, sampleRate) {
     for (let i = 0; i < samples.length; i++) {
         view.setInt16(44 + i * 2, samples[i] * 32767, true);
     }
+for (let i = 0; i < 100; i++) {
+    console.log(samples[i]); // Check if it's silent (all 0s)
+}
+
 
     return buffer;
 }
