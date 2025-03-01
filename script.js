@@ -60,32 +60,37 @@ function playBytebeat() {
         return;
     }
 
-    scriptNode.onaudioprocess = function(event) {
-        if (paused) return;
-        const output = event.outputBuffer.getChannelData(0);
-        for (let i = 0; i < output.length; i++, t++) {
-            try {
-                let f = new Function("t", `const sin=Math.sin,cos=Math.cos; return ` + formula);
-                let val = f(t);
-                if (mode === "classic") {
-                    output[i] = ((eval(formula) & 255) / 128) - 1;
-                } else if (mode === "js") {
-                    output[i] = ((val & 255) / 128) - 1;
-                } else if (mode === "float") {
-                    output[i] = (val / 128) - 1;
-                } else if (mode === "signed") {
-                    output[i] = ((val & 255) - 128) / 128;
-                } else if (mode === "sinmode") {
-                    output[i] = Math.sin(val / (Math.PI * 13));
-                } else if (mode === "lsb") {
-                    output[i] = ((val & 1) * 2) - 1;
-                }
-            } catch (e) {
-                document.getElementById("error").innerText = "Runtime error: " + e.message;
-                output[i] = 0;
+    sscriptNode.onaudioprocess = function(event) {
+    if (paused) return;
+    const output = event.outputBuffer.getChannelData(0);
+    
+    for (let i = 0; i < output.length; i++, t++) {
+        try {
+            let f = new Function("t", `const sin=Math.sin,cos=Math.cos; return ` + formula);
+            let val = f(t);
+            
+            // Ensure tValue updates properly
+            tValue = t; // Update tValue with the current time index
+
+            if (mode === "classic") {
+                output[i] = ((eval(formula) & 255) / 128) - 1;
+            } else if (mode === "js") {
+                output[i] = ((val & 255) / 128) - 1;
+            } else if (mode === "float") {
+                output[i] = (val / 128) - 1;
+            } else if (mode === "signed") {
+                output[i] = ((val & 255) - 128) / 128;
+            } else if (mode === "sinmode") {
+                output[i] = Math.sin(val / (Math.PI * 13));
+            } else if (mode === "lsb") {
+                output[i] = ((val & 1) * 2) - 1;
             }
+        } catch (e) {
+            document.getElementById("error").innerText = "Runtime error: " + e.message;
+            output[i] = 0;
         }
-    };
+    }
+};
 
     scriptNode.connect(gainNode);
     gainNode.connect(analyser);
