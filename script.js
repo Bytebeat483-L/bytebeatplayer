@@ -16,7 +16,8 @@ function playBytebeat() {
     if (paused) {
         paused = false;
         return;
-    }
+        updateURL();
+
     
     const sampleRate = parseInt(document.getElementById("sampleRate").value);
     audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate });
@@ -95,7 +96,9 @@ function updateVolume() {
     if (gainNode) {
         gainNode.gain.value = parseFloat(document.getElementById("volume").value);
     }
+    updateURL();
 }
+
 
 function visualize() {
     const canvas = document.getElementById("visualizer");
@@ -142,3 +145,10 @@ function updateURL() {
     const newURL = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
     window.history.replaceState({}, "", newURL);
 }
+// Update URL when the user changes any setting
+document.getElementById("formula").addEventListener("input", updateURL);
+document.getElementById("sampleRate").addEventListener("change", updateURL);
+document.getElementById("volume").addEventListener("input", updateURL);
+document.querySelectorAll('input[name="mode"]').forEach(radio => {
+    radio.addEventListener("change", updateURL);
+});
