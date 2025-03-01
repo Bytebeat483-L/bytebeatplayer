@@ -145,10 +145,15 @@ function updateURL() {
     const newURL = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
     window.history.replaceState({}, "", newURL);
 }
-// Update URL when the user changes any setting
-document.getElementById("formula").addEventListener("input", updateURL);
-document.getElementById("sampleRate").addEventListener("change", updateURL);
-document.getElementById("volume").addEventListener("input", updateURL);
-document.querySelectorAll('input[name="mode"]').forEach(radio => {
-    radio.addEventListener("change", updateURL);
-});
+window.onload = function () {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("formula")) document.getElementById("formula").value = decodeURIComponent(params.get("formula"));
+    if (params.has("sampleRate")) document.getElementById("sampleRate").value = params.get("sampleRate");
+    if (params.has("mode")) document.querySelector(`input[name="mode"][value="${params.get("mode")}"]`).checked = true;
+    if (params.has("volume")) document.getElementById("volume").value = params.get("volume");
+
+    document.getElementById("formula").addEventListener("input", updateURL);
+    document.getElementById("sampleRate").addEventListener("input", updateURL);
+    document.getElementById("volume").addEventListener("input", updateURL);
+    document.querySelectorAll('input[name="mode"]').forEach(radio => radio.addEventListener("change", updateURL));
+};
