@@ -117,3 +117,25 @@ function visualize() {
     }
     draw();
 }
+function updateURL() {
+    const formula = encodeURIComponent(document.getElementById("formula").value);
+    const sampleRate = document.getElementById("sampleRate").value;
+    const volume = document.getElementById("volume").value;
+    const mode = document.querySelector('input[name="mode"]:checked').value;
+
+    const params = new URLSearchParams();
+    params.set("formula", formula);
+    params.set("sampleRate", sampleRate);
+    params.set("volume", volume);
+    params.set("mode", mode);
+
+    window.history.replaceState({}, "", "?" + params.toString());
+}
+
+// Call updateURL whenever settings change
+document.getElementById("formula").addEventListener("input", updateURL);
+document.getElementById("sampleRate").addEventListener("input", updateURL);
+document.getElementById("volume").addEventListener("input", updateURL);
+document.querySelectorAll('input[name="mode"]').forEach((radio) => {
+    radio.addEventListener("change", updateURL);
+});
