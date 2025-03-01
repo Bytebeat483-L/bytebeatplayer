@@ -56,7 +56,7 @@ function playBytebeat() {
     try {
         new Function("t", `const sin=Math.sin,cos=Math.cos; return ` + formula);
     } catch (e) {
-        document.getElementById("error").innerText = "Error in formula: " + e.message;
+        document.getElementById("error").innerText = "compilation error: " + e.message;
         return;
     }
 
@@ -72,7 +72,7 @@ function playBytebeat() {
                 } else if (mode === "js") {
                     output[i] = ((val & 255) / 128) - 1;
                 } else if (mode === "float") {
-                    output[i] = (val&255 / 128) - 1;
+                    output[i] = (val / 128) - 1;
                 } else if (mode === "signed") {
                     output[i] = ((val & 255) - 128) / 128;
                 } else if (mode === "sinmode") {
@@ -158,4 +158,80 @@ window.onload = function() {
     document.getElementById("sampleRate").addEventListener("input", updateURL);
     document.getElementById("volume").addEventListener("input", updateURL);
     document.querySelectorAll('input[name="mode"]').forEach(e => e.addEventListener("change", updateURL));
+    document.getElementById("downloadBtn").addEventListener("click", downloadAudio);
+
 };
+function downloadAudio() {
+    const sampleRate = parseInt(document.getElementById("sampleRate").value) || 8000;
+    const duration = 90; // 90 seconds
+    const totalSamples = sampleRate * duration;
+    const mode = document.querySelector('input[name="mode"]:checked').value;
+    const formula = document.getElementById("formula").value;
+
+    let audioBuffer = new Float32Array(totalSamples);
+
+    // Generate samples
+    for (let t = 0; t < totalSamples; t++) {
+        let value;
+        try {
+            if (mode === "js") {
+                const fn = new Function("t", "with(Math) { return " + formula + "; }");
+                value = fn(t) / 128; // Normalize for Floatbeat
+            } else {
+                value = eval(formula) / 128; // Normalize for Bytebeat
+            }
+        } catch (e) {
+            console.error("Error generating audio:", e);
+            return;
+        }
+
+        // Ensure value is within -1 to 1
+        audioBuffer[t] = Math.max(-1, Math.min(1, value));
+    }
+
+    // Convert to WAV
+    const wavData = encodeWAV(audioBuffer, sampleRate);
+    const blob = new Blob([wavData], { type: "audio/wav" });
+
+    // Create and trigger download
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "bytebeat.wav";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+// Encode WAV file
+function encodeWAV(samples, sampleRate) {
+    const buffer = new ArrayBuffer(44 + samples.length * 2);
+    const view = new DataView(buffer);
+
+    // WAV Header
+    const writeString = (offset, str) => {
+        for (let i = 0; i < str.length; i++) {
+            view.setUint8(offset + i, str.charCodeAt(i));
+        }
+    };
+
+    writeString(0, "RIFF"); // ChunkID
+    view.setUint32(4, 36 + samples.length * 2, true); // ChunkSize
+    writeString(8, "WAVE"); // Format
+    writeString(12, "fmt ");
+    view.setUint32(16, 16, true); // Subchunk1Size
+    view.setUint16(20, 1, true); // AudioFormat (PCM)
+    view.setUint16(22, 1, true); // NumChannels
+    view.setUint32(24, sampleRate, true); // SampleRate
+    view.setUint32(28, sampleRate * 2, true); // ByteRate
+    view.setUint16(32, 2, true); // BlockAlign
+    view.setUint16(34, 16, true); // BitsPerSample
+    writeString(36, "data");
+    view.setUint32(40, samples.length * 2, true); // Subchunk2Size
+
+    // PCM Data
+    for (let i = 0; i < samples.length; i++) {
+        view.setInt16(44 + i * 2, samples[i] * 32767, true);
+    }
+
+    return buffer;
+}
