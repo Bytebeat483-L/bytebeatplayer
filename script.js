@@ -244,30 +244,3 @@ for (let i = 0; i < 100; i++) {
 
     return buffer;
 }
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-const scriptNode = audioCtx.createScriptProcessor(4096, 1, 1);
-let t = 0;
-let paused = false;
-let tValue = 0;
-
-// Create canvas for visualization
-const canvas = document.createElement('canvas');
-document.body.appendChild(canvas);
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = 200;
-
-// Default colors
-let waveColor = '#00ff00'; // Green
-let bgColor = '#000000';   // Black
-
-// Add color pickers to customize visualizer colors
-const waveColorPicker = document.createElement('input');
-waveColorPicker.type = 'color';
-waveColorPicker.value = waveColor;
-waveColorPicker.addEventListener('input', (e) => {
-    waveColor = e.target.value;
-});
-document.body.appendChild(waveColorPicker);
-
-
