@@ -1,3 +1,13 @@
+window.onload = function() {
+    let params = new URLSearchParams(window.location.search);
+    if (params.has("formula")) document.getElementById("formula").value = params.get("formula");
+    if (params.has("sampleRate")) document.getElementById("sampleRate").value = params.get("sampleRate");
+    if (params.has("volume")) document.getElementById("volume").value = params.get("volume");
+    if (params.has("mode")) {
+        document.querySelector(`input[name="mode"][value="${params.get("mode")}"]`).checked = true;
+    }
+};
+
 let audioCtx, scriptNode, analyser, gainNode, dataArray, paused = false, t = 0;
 
 function playBytebeat() {
