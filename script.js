@@ -133,10 +133,12 @@ function updateURL() {
     const mode = document.querySelector('input[name="mode"]:checked').value;
     const volume = document.getElementById("volume").value;
 
-    const newURL = `${window.location.origin}${window.location.pathname}?formula=${formula}&sampleRate=${sampleRate}&mode=${mode}&volume=${volume}`;
-    window.history.replaceState({}, "", newURL);
-}
+    const params = new URLSearchParams();
+    params.set("formula", formula);
+    params.set("sampleRate", sampleRate);
+    params.set("mode", mode);
+    params.set("volume", volume);
 
-    
-    history.replaceState(null, "", "?" + params.toString());
+    const newURL = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState({}, "", newURL);
 }
