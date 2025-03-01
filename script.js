@@ -270,37 +270,4 @@ waveColorPicker.addEventListener('input', (e) => {
 });
 document.body.appendChild(waveColorPicker);
 
-const bgColorPicker = document.createElement('input');
-bgColorPicker.type = 'color';
-bgColorPicker.value = bgColor;
-bgColorPicker.addEventListener('input', (e) => {
-    bgColor = e.target.value;
-});
-document.body.appendChild(bgColorPicker);
 
-scriptNode.onaudioprocess = function(event) {
-    if (paused) return;
-    const output = event.outputBuffer.getChannelData(0);
-    for (let i = 0; i < output.length; i++, t++) {
-        tValue = t; // Update tValue
-        output[i] = Math.sin(2 * Math.PI * 440 * t / audioCtx.sampleRate); // Example waveform
-    }
-    drawVisualizer(output);
-};
-
-audioCtx.resume();
-scriptNode.connect(audioCtx.destination);
-
-function drawVisualizer(data) {
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = waveColor;
-    ctx.beginPath();
-    for (let i = 0; i < data.length; i++) {
-        const x = (i / data.length) * canvas.width;
-        const y = (1 - data[i]) * (canvas.height / 2);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-}
