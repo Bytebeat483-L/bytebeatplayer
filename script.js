@@ -72,7 +72,7 @@ function playBytebeat() {
                 } else if (mode === "js") {
                     output[i] = ((val & 255) / 128) - 1;
                 } else if (mode === "float") {
-                    output[i] = (val / 128) - 1;
+                    output[i] = (val&255 / 128) - 1;
                 } else if (mode === "signed") {
                     output[i] = ((val & 255) - 128) / 128;
                 } else if (mode === "sinmode") {
