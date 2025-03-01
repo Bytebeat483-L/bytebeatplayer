@@ -3,7 +3,7 @@ let audioCtx, scriptNode, analyser, gainNode, dataArray, paused = false, t = 0;
 function getURLParams() {
     let params = new URLSearchParams(window.location.search);
     return {
-        code: params.get("code") || "(3e5/(t&16383)&192)+(3e6/(t+8191&16383)&128|t>>5)+((t**3>>8&64|t>>5)&64)",
+        code: params.get("code") || "(7e5/(t&16383)&128|t>>6)+(t>32768?((t**3>>8&64|t>>6)&64):0)",
         mode: params.get("mode") || "js",
         sampleRate: params.get("rate") || 44100,
         volume: params.get("vol") || 1
