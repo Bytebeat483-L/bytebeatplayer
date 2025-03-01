@@ -3,9 +3,9 @@ let audioCtx, scriptNode, analyser, gainNode, dataArray, paused = false, t = 0;
 function getURLParams() {
     let params = new URLSearchParams(window.location.search);
     return {
-        code: params.get("code") || "t*(t&16384?7:5)*(3-(3&t>>9)+(3&t>>8))>>(3&-t>>(t&4096?2:16))|t>>3",
+        code: params.get("code") || "(3e5/(t&16383)&192)+(3e6/(t+8191&16383)&128|t>>5)+((t**3>>8&64|t>>5)&64)",
         mode: params.get("mode") || "js",
-        sampleRate: params.get("rate") || 8000,
+        sampleRate: params.get("rate") || 44100,
         volume: params.get("vol") || 1
     };
 }
