@@ -1,11 +1,14 @@
-window.onload = function() {
-    let params = new URLSearchParams(window.location.search);
-    if (params.has("formula")) document.getElementById("formula").value = params.get("formula");
+window.onload = function () {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("formula")) document.getElementById("formula").value = decodeURIComponent(params.get("formula"));
     if (params.has("sampleRate")) document.getElementById("sampleRate").value = params.get("sampleRate");
+    if (params.has("mode")) document.querySelector(`input[name="mode"][value="${params.get("mode")}"]`).checked = true;
     if (params.has("volume")) document.getElementById("volume").value = params.get("volume");
-    if (params.has("mode")) {
-        document.querySelector(`input[name="mode"][value="${params.get("mode")}"]`).checked = true;
-    }
+
+    document.getElementById("formula").addEventListener("input", updateURL);
+    document.getElementById("sampleRate").addEventListener("input", updateURL);
+    document.getElementById("volume").addEventListener("input", updateURL);
+    document.querySelectorAll('input[name="mode"]').forEach(radio => radio.addEventListener("change", updateURL));
 };
 
 let audioCtx, scriptNode, analyser, gainNode, dataArray, paused = false, t = 0;
@@ -145,15 +148,24 @@ function updateURL() {
     const newURL = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
     window.history.replaceState({}, "", newURL);
 }
-window.onload = function () {
+function loadFromURL() {
     const params = new URLSearchParams(window.location.search);
-    if (params.has("formula")) document.getElementById("formula").value = decodeURIComponent(params.get("formula"));
-    if (params.has("sampleRate")) document.getElementById("sampleRate").value = params.get("sampleRate");
-    if (params.has("mode")) document.querySelector(`input[name="mode"][value="${params.get("mode")}"]`).checked = true;
-    if (params.has("volume")) document.getElementById("volume").value = params.get("volume");
+    
+    if (params.has("code")) {
+        document.getElementById("codeInput").value = decodeURIComponent(params.get("code"));
+    }
+    if (params.has("samplerate")) {
+        document.getElementById("samplerate").value = params.get("samplerate");
+    }
+    if (params.has("volume")) {
+        document.getElementById("volume").value = params.get("volume");
+    }
+    if (params.has("mode")) {
+        document.querySelectorAll('input[name="mode"]').forEach((radio) => {
+            if (radio.value === params.get("mode")) radio.checked = true;
+        });
+    }
+}
 
-    document.getElementById("formula").addEventListener("input", updateURL);
-    document.getElementById("sampleRate").addEventListener("input", updateURL);
-    document.getElementById("volume").addEventListener("input", updateURL);
-    document.querySelectorAll('input[name="mode"]').forEach(radio => radio.addEventListener("change", updateURL));
-};
+// Run this function when the page loads
+window.onload = loadFromURL;
