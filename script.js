@@ -159,7 +159,3 @@ window.onload = function() {
     document.getElementById("volume").addEventListener("input", updateURL);
     document.querySelectorAll('input[name="mode"]').forEach(e => e.addEventListener("change", updateURL));
 };
-
-
-    return buffer;
-}
