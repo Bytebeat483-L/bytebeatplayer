@@ -3,10 +3,10 @@ let audioCtx, scriptNode, analyser, gainNode, dataArray, paused = false, t = 0;
 function getURLParams() {
     let params = new URLSearchParams(window.location.search);
     return {
-        code: params.get("code") || "t*(t&16384?7:5)*(3-(3&t>>9)+(3&t>>8))>>(3&-t>>(t&4096?2:16))|t>>3",
+        code: params.get("code") || ".9**log(t&16383)*2e4&128",
         mode: params.get("mode") || "js",
         sampleRate: params.get("rate") || 8000,
-        volume: params.get("vol") || 1
+        volume: params.get("vol") || 0.5
     };
 }
 
@@ -74,7 +74,7 @@ function playBytebeat() {
                 } else if (mode === "float") {
                     output[i] = (val / 128) - 1;
                 } else if (mode === "signed") {
-                    output[i] = ((val & 255) - 128) / 128;
+                    output[i] = ((val & 255) + 128) / 128;
                 } else if (mode === "sinmode") {
                     output[i] = Math.sin(val / (Math.PI * 13));
                 } else if (mode === "lsb") {
