@@ -54,7 +54,7 @@ function playBytebeat() {
     const mode = document.querySelector('input[name="mode"]:checked').value;
     
     try {
-        new Function("t", `const sin=Math.sin,cos=Math.cos; return ` + formula);
+        new Function("t", ` sin=Math.sin,cos=Math.cos,tan=Math.tan,log=Math.log,floor=Math.floor; return ` + formula);
     } catch (e) {
         document.getElementById("error").innerText = "Error in formula: " + e.message;
         return;
