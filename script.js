@@ -3,10 +3,10 @@ let audioCtx, scriptNode, analyser, gainNode, dataArray, paused = false, t = 0;
 function getURLParams() {
     let params = new URLSearchParams(window.location.search);
     return {
-        code: params.get("code") || ".9**log(t&16383)*2e4&128",
+        code: params.get("code") || "(t>>9^(t>>9)-1^1)%13*t",
         mode: params.get("mode") || "js",
         sampleRate: params.get("rate") || 8000,
-        volume: params.get("vol") || 0.5
+        volume: params.get("vol") || 0.85
     };
 }
 
@@ -65,7 +65,7 @@ function playBytebeat() {
         const output = event.outputBuffer.getChannelData(0);
         for (let i = 0; i < output.length; i++, t++) {
             try {
-                let f = new Function("t", `const sin=Math.sin,cos=Math.cos; return ` + formula);
+                let f = new Function("t", `const sin=Math.sin,cos=Math.cos,tan=Math.tan,log=Math.log,floor=Math.floor; return ` + formula);
                 let val = f(t);
                 if (mode === "classic") {
                     output[i] = ((eval(formula) & 255) / 128) - 1;
